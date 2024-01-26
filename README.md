@@ -1,291 +1,436 @@
-![v](https://img.shields.io/badge/version-2.3.1-blue) ![v](https://img.shields.io/badge/updated-November%2029,%20%202023-green)
-
-### UPDATE (November 2023) -  Version 2.3.0: Verbosity parameter added, long-standing issues fixed
-
----
-![Sweetviz Logo](http://cooltiming.com/SV/logo.png) 
-
-_In-depth EDA **(target analysis, comparison, feature analysis, correlation)** in two lines of code!_
-
-![Features](http://cooltiming.com/SV/features.png)
-
-Sweetviz is an open-source Python library that generates beautiful, high-density visualizations to kickstart EDA (Exploratory Data Analysis) with just two lines of code. Output is a fully self-contained HTML application.
-
-The system is built around quickly **visualizing target values** and **comparing datasets**. Its goal is to help quick analysis of target characteristics, training vs testing data, and other such data characterization tasks. 
-
-Usage and parameters are described below, [you can also find an article describing its features in depth and see examples in action HERE](https://towardsdatascience.com/powerful-eda-exploratory-data-analysis-in-just-two-lines-of-code-using-sweetviz-6c943d32f34).
-
-**Sweetviz development is still ongoing!** Please let me know if you run into any data, compatibility or install issues! Thank you for [reporting any BUGS in the issue tracking system here](https://github.com/fbdesignpro/sweetviz/issues), and I welcome your feedback and questions on usage/features [in the brand-new GitHub "Discussions" tab right here!](https://github.com/fbdesignpro/sweetviz/discussions).
-
-## Examples & mentions
-[**Example HTML report** using the Titanic dataset](http://cooltiming.com/SWEETVIZ_REPORT.html)
-
-[**Example Notebook w/docs** on Colab (Jupyter/other notebooks should also work)](https://colab.research.google.com/drive/1-md6YEwcVGWVnQWTBirQSYQYgdNoeSWg?usp=sharing)
-
-[**Medium Article** describing its features in depth](https://towardsdatascience.com/powerful-eda-exploratory-data-analysis-in-just-two-lines-of-code-using-sweetviz-6c943d32f34)
-
-KD Nugget articles:
-[![KDNuggets](https://www.kdnuggets.com/images/tkb-2102-g.png)](https://www.kdnuggets.com/2021/02/powerful-exploratory-data-analysis-sweetviz.html) [![KDNuggets](https://www.kdnuggets.com/images/tkb-2103-g.png)](https://www.kdnuggets.com/2021/03/know-your-data-much-faster-sweetviz-python-library.html)
-
-# Features
-- **Target analysis** 
-  - Shows how a target value (e.g. "Survived" in the Titanic dataset) relates to other features
-- **Visualize and compare**
-  - Distinct datasets (e.g. training vs test data)
-  - Intra-set characteristics (e.g. male versus female)
-- **Mixed-type associations**
-  - Sweetviz integrates associations for numerical (Pearson's correlation), categorical (uncertainty coefficient) and categorical-numerical (correlation ratio) datatypes seamlessly, to provide maximum information for all data types.
-- **Type inference**
-  - Automatically detects numerical, categorical and text features, with optional manual overrides 
-- **Summary information** 
-  - Type, unique values, missing values, duplicate rows, most frequent values
-  - Numerical analysis: 
-    - min/max/range, quartiles, mean, mode, standard deviation, sum, median absolute deviation, coefficient of variation, kurtosis, skewness
-
-## New & notable
-- Version 2.2: Big compatibility update for python 3.7+ and numpy versions
-- Version 2.1: **Comet.ml** support
-- Version 2.0: **Jupyter, Colab & other notebook** support, report **scaling & vertical layout**  
-
-_(see below for docs on these features)_
-
-# Upgrading
-Some people have experienced mixed results behavior upgrading through `pip`. To update to the latest from an existing install, it is recommended to `pip uninstall sweetviz` first, then simply install.
-
-# Installation
-Sweetviz currently supports Python 3.6+ and Pandas 0.25.3+. Reports are output using the base "os" module, so custom environments such as Google Colab which require custom file operations are not yet supported, although I am looking into a solution. 
-## Using pip
-The best way to install sweetviz (other than from source) is to use pip:
-```
-pip install sweetviz
-```
-#### Installation issues & fixes
-In some rare cases, users have reported errors such as `ModuleNotFoundError: No module named 'sweetviz'` and `AttributeError: module 'sweetviz' has no attribute 'analyze'`.
-In those cases, we suggest the following:
-- Make sure none of your scripts are named `sweetviz.py`, as that interferes with the library itself. Delete or rename that script (and any associated `.pyc` files), and try again.
-- Try uninstalling the library using `pip uninstall sweetviz`, then reinstalling
-- The issue may stem from using multiple versions of Python, or from OS permissions. The following Stack Overflow articles have resolved many of these issues reported: [Article 1](https://stackoverflow.com/questions/32680081/importerror-after-successful-pip-installation/32680082), [Article 2](https://stackoverflow.com/questions/14295680/unable-to-import-a-module-that-is-definitely-installed), [Article 3](https://stackoverflow.com/questions/44528638/after-pip-successful-installed-modulenotfounderror) 
-- If all else fails, post a bug issue [here on github](https://github.com/fbdesignpro/sweetviz/issues). Thank you for taking the time, it may help resolve the issue for you and everyone else!
-# Basic Usage
-Creating a report is a quick 2-line process:
-1. Create a `DataframeReport` object using one of: `analyze()`, `compare()` or `compare_intra()`
-2. Use a `show_xxx()` function to render the report. You can now use either **html** or **notebook** report options, as well as scaling: (more info on these options below)
-
-![Report_Show_Options](http://cooltiming.com/SV/Layout-Anim3.gif) 
-
-## Step 1: Create the report
-There are 3 main functions for creating reports:
-- analyze(...)
-- compare(...)
-- compare_intra(...)
-
-#### Analyzing a single dataframe (and its optional target feature)
-To analyze a single dataframe, simply use the `analyze(...)` function, then the `show_html(...)` function:
-```
-import sweetviz as sv
+<div class="Box-sc-g0xbh4-0 bJMeLZ js-snippet-clipboard-copy-unpositioned" data-hpc="true"><article class="markdown-body entry-content container-lg" itemprop="text"><p dir="auto"><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/8c4fac72c656fd25eb4c4180326c2ffec519e7dfa70ad2624566b96723e1508f/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f76657273696f6e2d322e332e312d626c7565"><img src="https://camo.githubusercontent.com/8c4fac72c656fd25eb4c4180326c2ffec519e7dfa70ad2624566b96723e1508f/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f76657273696f6e2d322e332e312d626c7565" alt="v" data-canonical-src="https://img.shields.io/badge/version-2.3.1-blue" style="max-width: 100%;"></a> <a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/4e3a94daf1047cd9671c922e9cc9e3e1b67c31e30e0e7fec45aea59e076b1e76/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f757064617465642d4e6f76656d62657225323032392c253230253230323032332d677265656e"><img src="https://camo.githubusercontent.com/4e3a94daf1047cd9671c922e9cc9e3e1b67c31e30e0e7fec45aea59e076b1e76/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f757064617465642d4e6f76656d62657225323032392c253230253230323032332d677265656e" alt="v" data-canonical-src="https://img.shields.io/badge/updated-November%2029,%20%202023-green" style="max-width: 100%;"></a></p>
+<h3 tabindex="-1" dir="auto"><a id="user-content-update-november-2023----version-230-verbosity-parameter-added-long-standing-issues-fixed" class="anchor" aria-hidden="true" tabindex="-1" href="#update-november-2023----version-230-verbosity-parameter-added-long-standing-issues-fixed"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">更新（2023 年 11 月）- 版本 2.3.0：添加了 Verbosity 参数，修复了长期存在的问题</font></font></h3>
+<hr>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/0871ed190bcb02a12b1550a7368c678d0109b14f27f96dafc1e7ee1d2332e4cb/687474703a2f2f636f6f6c74696d696e672e636f6d2f53562f6c6f676f2e706e67"><img src="https://camo.githubusercontent.com/0871ed190bcb02a12b1550a7368c678d0109b14f27f96dafc1e7ee1d2332e4cb/687474703a2f2f636f6f6c74696d696e672e636f6d2f53562f6c6f676f2e706e67" alt="Sweetviz 徽标" data-canonical-src="http://cooltiming.com/SV/logo.png" style="max-width: 100%;"></a></p>
+<p dir="auto"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">两行代码</font><font style="vertical-align: inherit;">深入EDA </font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">（目标分析、比较、特征分析、关联） ！</font></font></strong><font style="vertical-align: inherit;"></font></em></p>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/699e49a5d3602a6f1f688f36346cdc6e6194d360a6469b20091aebc301a12bb5/687474703a2f2f636f6f6c74696d696e672e636f6d2f53562f66656174757265732e706e67"><img src="https://camo.githubusercontent.com/699e49a5d3602a6f1f688f36346cdc6e6194d360a6469b20091aebc301a12bb5/687474703a2f2f636f6f6c74696d696e672e636f6d2f53562f66656174757265732e706e67" alt="特征" data-canonical-src="http://cooltiming.com/SV/features.png" style="max-width: 100%;"></a></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Sweetviz 是一个开源 Python 库，只需两行代码即可生成精美的高密度可视化，从而启动 EDA（探索性数据分析）。</font><font style="vertical-align: inherit;">Output 是一个完全独立的 HTML 应用程序。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">该系统是围绕快速</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">可视化目标值</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">比较数据集</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">而构建的。</font><font style="vertical-align: inherit;">其目标是帮助快速分析目标特征、训练与测试数据以及其他此类数据表征任务。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">下面描述了用法和参数，</font></font><a href="https://towardsdatascience.com/powerful-eda-exploratory-data-analysis-in-just-two-lines-of-code-using-sweetviz-6c943d32f34" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您还可以找到一篇深入描述其功能的文章，并在此处查看操作示例</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+<p dir="auto"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Sweetviz 开发仍在进行中！</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果您遇到任何数据、兼容性或安装问题，请告诉我！</font><font style="vertical-align: inherit;">感谢您</font></font><a href="https://github.com/fbdesignpro/sweetviz/issues"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在此处报告问题跟踪系统中的任何 BUGS</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，并且欢迎您</font></font><a href="https://github.com/fbdesignpro/sweetviz/discussions"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在此处的全新 GitHub“讨论”选项卡中提供有关使用/功能的反馈和问题！</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+<h2 tabindex="-1" dir="auto"><a id="user-content-examples--mentions" class="anchor" aria-hidden="true" tabindex="-1" href="#examples--mentions"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">示例和提及</font></font></h2>
+<p dir="auto"><a href="http://cooltiming.com/SWEETVIZ_REPORT.html" rel="nofollow"><strong><font style="vertical-align: inherit;"></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">使用泰坦尼克号数据集的</font><strong><font style="vertical-align: inherit;">HTML 报告示例</font></strong></font></a></p>
+<p dir="auto"><a href="https://colab.research.google.com/drive/1-md6YEwcVGWVnQWTBirQSYQYgdNoeSWg?usp=sharing" rel="nofollow"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Colab 上带有文档的示例笔记本</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">（Jupyter/其他笔记本也应该可以）</font></font></a></p>
+<p dir="auto"><a href="https://towardsdatascience.com/powerful-eda-exploratory-data-analysis-in-just-two-lines-of-code-using-sweetviz-6c943d32f34" rel="nofollow"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Medium 文章</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">深入描述其功能</font></font></a></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">KD 掘金文章：
+</font></font><a href="https://www.kdnuggets.com/2021/02/powerful-exploratory-data-analysis-sweetviz.html" rel="nofollow"><img src="https://camo.githubusercontent.com/81f5bb9ead0637636e24fcc784d8300c08d80cd31ed0581683e275683723b048/68747470733a2f2f7777772e6b646e7567676574732e636f6d2f696d616765732f746b622d323130322d672e706e67" alt="KD掘金队" data-canonical-src="https://www.kdnuggets.com/images/tkb-2102-g.png" style="max-width: 100%;"></a> <a href="https://www.kdnuggets.com/2021/03/know-your-data-much-faster-sweetviz-python-library.html" rel="nofollow"><img src="https://camo.githubusercontent.com/c304a98b9567cdf3de00002905199e6312b3a12cc21157efd7bc52b05b28b906/68747470733a2f2f7777772e6b646e7567676574732e636f6d2f696d616765732f746b622d323130332d672e706e67" alt="KD掘金队" data-canonical-src="https://www.kdnuggets.com/images/tkb-2103-g.png" style="max-width: 100%;"></a></p>
+<h1 tabindex="-1" dir="auto"><a id="user-content-features" class="anchor" aria-hidden="true" tabindex="-1" href="#features"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">特征</font></font></h1>
+<ul dir="auto">
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">目标分析</font></font></strong>
+<ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">显示目标值（例如泰坦尼克号数据集中的“幸存”）与其他要素的关系</font></font></li>
+</ul>
+</li>
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">可视化和比较</font></font></strong>
+<ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">不同的数据集（例如训练数据与测试数据）</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">组内特征（例如男性与女性）</font></font></li>
+</ul>
+</li>
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">混合型协会</font></font></strong>
+<ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Sweetviz 无缝集成了数值（皮尔逊相关性）、分类（不确定性系数）和分类数值（相关比）数据类型的关联，为所有数据类型提供最大程度的信息。</font></font></li>
+</ul>
+</li>
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">类型推断</font></font></strong>
+<ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">自动检测数字、分类和文本特征，并可选择手动覆盖</font></font></li>
+</ul>
+</li>
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">概要信息</font></font></strong>
+<ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">类型、唯一值、缺失值、重复行、最常见值</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">数值分析：
+</font></font><ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">最小/最大/范围、四分位数、平均值、众数、标准差、总和、中值绝对偏差、变异系数、峰度、偏度</font></font></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 tabindex="-1" dir="auto"><a id="user-content-new--notable" class="anchor" aria-hidden="true" tabindex="-1" href="#new--notable"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">新的和值得注意的</font></font></h2>
+<ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">版本 2.2：Python 3.7+ 和 numpy 版本的大兼容性更新</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">版本 2.1：</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Comet.ml</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">支持</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">2.0 版：</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Jupyter、Colab 和其他笔记本</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">支持、报告</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">缩放和垂直布局</font></font></strong></li>
+</ul>
+<p dir="auto"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">（有关这些功能的文档，请参阅下面）</font></font></em></p>
+<h1 tabindex="-1" dir="auto"><a id="user-content-upgrading" class="anchor" aria-hidden="true" tabindex="-1" href="#upgrading"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">升级中</font></font></h1>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">有些人通过行为升级经历了好坏参半的结果</font></font><code>pip</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">要从现有安装更新到最新版本，建议</font></font><code>pip uninstall sweetviz</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">首先安装，然后简单安装。</font></font></p>
+<h1 tabindex="-1" dir="auto"><a id="user-content-installation" class="anchor" aria-hidden="true" tabindex="-1" href="#installation"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">安装</font></font></h1>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Sweetviz 目前支持 Python 3.6+ 和 Pandas 0.25.3+。</font><font style="vertical-align: inherit;">报告是使用基本“os”模块输出的，因此尚不支持需要自定义文件操作的自定义环境，例如 Google Colab，尽管我正在研究解决方案。</font></font></p>
+<h2 tabindex="-1" dir="auto"><a id="user-content-using-pip" class="anchor" aria-hidden="true" tabindex="-1" href="#using-pip"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">使用点</font></font></h2>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">安装 sweetviz 的最佳方法（除了从源代码安装）是使用 pip：</font></font></p>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>pip install sweetviz
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="pip install sweetviz" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<h4 tabindex="-1" dir="auto"><a id="user-content-installation-issues--fixes" class="anchor" aria-hidden="true" tabindex="-1" href="#installation-issues--fixes"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">安装问题及修复</font></font></h4>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在极少数情况下，用户报告了诸如</font></font><code>ModuleNotFoundError: No module named 'sweetviz'</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和 之类的错误</font></font><code>AttributeError: module 'sweetviz' has no attribute 'analyze'</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">在这些情况下，我们建议如下：</font></font></p>
+<ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">确保您的脚本都没有被命名</font></font><code>sweetviz.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，因为这会干扰库本身。</font><font style="vertical-align: inherit;">删除或重命名该脚本（以及任何关联的</font></font><code>.pyc</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">文件），然后重试。</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">尝试使用卸载库</font></font><code>pip uninstall sweetviz</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，然后重新安装</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">该问题可能源于使用多个版本的 Python 或操作系统权限。</font><font style="vertical-align: inherit;">以下 Stack Overflow 文章已解决了许多报告的问题：</font></font><a href="https://stackoverflow.com/questions/32680081/importerror-after-successful-pip-installation/32680082" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">第 1 条</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="https://stackoverflow.com/questions/14295680/unable-to-import-a-module-that-is-definitely-installed" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">第 2 条</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><a href="https://stackoverflow.com/questions/44528638/after-pip-successful-installed-modulenotfounderror" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">第 3 条</font></font></a></li>
+<li><font style="vertical-align: inherit;"></font><a href="https://github.com/fbdesignpro/sweetviz/issues"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果一切都失败，请在 github 上</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">发布错误问题</font><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">感谢您抽出宝贵的时间，这可能有助于解决您和其他人的问题！</font></font></li>
+</ul>
+<h1 tabindex="-1" dir="auto"><a id="user-content-basic-usage" class="anchor" aria-hidden="true" tabindex="-1" href="#basic-usage"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">基本用法</font></font></h1>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">创建报告是一个快速的两行过程：</font></font></p>
+<ol dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">使用</font></font><code>DataframeReport</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">以下之一</font><font style="vertical-align: inherit;">创建对象：</font></font><code>analyze()</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">或</font></font><code>compare()</code><font style="vertical-align: inherit;"></font><code>compare_intra()</code></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">使用</font></font><code>show_xxx()</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">函数来呈现报告。</font><font style="vertical-align: inherit;">您现在可以使用</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">html</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">或</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">笔记本</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">报告选项，以及缩放：（有关这些选项的更多信息如下）</font></font></li>
+</ol>
+<p dir="auto"><animated-image data-catalyst=""><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/50dfd2fbe46044649b6e818ecdae622f1fdccb74d8dd142a899c50ec27e737f7/687474703a2f2f636f6f6c74696d696e672e636f6d2f53562f4c61796f75742d416e696d332e676966" data-target="animated-image.originalLink"><img src="https://camo.githubusercontent.com/50dfd2fbe46044649b6e818ecdae622f1fdccb74d8dd142a899c50ec27e737f7/687474703a2f2f636f6f6c74696d696e672e636f6d2f53562f4c61796f75742d416e696d332e676966" alt="报告显示选项" data-canonical-src="http://cooltiming.com/SV/Layout-Anim3.gif" style="max-width: 100%; display: inline-block;" data-target="animated-image.originalImage"></a>
+      <span class="AnimatedImagePlayer" data-target="animated-image.player" hidden="">
+        <a data-target="animated-image.replacedLink" class="AnimatedImagePlayer-images" href="https://camo.githubusercontent.com/50dfd2fbe46044649b6e818ecdae622f1fdccb74d8dd142a899c50ec27e737f7/687474703a2f2f636f6f6c74696d696e672e636f6d2f53562f4c61796f75742d416e696d332e676966" target="_blank">
+          
+        <span data-target="animated-image.imageContainer">
+            <img data-target="animated-image.replacedImage" alt="Report_Show_Options" class="AnimatedImagePlayer-animatedImage" src="https://camo.githubusercontent.com/50dfd2fbe46044649b6e818ecdae622f1fdccb74d8dd142a899c50ec27e737f7/687474703a2f2f636f6f6c74696d696e672e636f6d2f53562f4c61796f75742d416e696d332e676966" style="display: block; opacity: 1;">
+          <canvas class="AnimatedImagePlayer-stillImage" aria-hidden="true" width="814" height="331"></canvas></span></a>
+        <button data-target="animated-image.imageButton" class="AnimatedImagePlayer-images" tabindex="-1" aria-label="Play Report_Show_Options" hidden=""></button>
+        <span class="AnimatedImagePlayer-controls" data-target="animated-image.controls" hidden="">
+          <button data-target="animated-image.playButton" class="AnimatedImagePlayer-button" aria-label="Play Report_Show_Options">
+            <svg aria-hidden="true" focusable="false" class="octicon icon-play" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 13.5427V2.45734C4 1.82607 4.69692 1.4435 5.2295 1.78241L13.9394 7.32507C14.4334 7.63943 14.4334 8.36057 13.9394 8.67493L5.2295 14.2176C4.69692 14.5565 4 14.1739 4 13.5427Z">
+            </path></svg>
+            <svg aria-hidden="true" focusable="false" class="octicon icon-pause" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="2" width="3" height="12" rx="1"></rect>
+              <rect x="9" y="2" width="3" height="12" rx="1"></rect>
+            </svg>
+          </button>
+          <a data-target="animated-image.openButton" aria-label="Open Report_Show_Options in new window" class="AnimatedImagePlayer-button" href="https://camo.githubusercontent.com/50dfd2fbe46044649b6e818ecdae622f1fdccb74d8dd142a899c50ec27e737f7/687474703a2f2f636f6f6c74696d696e672e636f6d2f53562f4c61796f75742d416e696d332e676966" target="_blank">
+            <svg aria-hidden="true" class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+              <path fill-rule="evenodd" d="M10.604 1h4.146a.25.25 0 01.25.25v4.146a.25.25 0 01-.427.177L13.03 4.03 9.28 7.78a.75.75 0 01-1.06-1.06l3.75-3.75-1.543-1.543A.25.25 0 0110.604 1zM3.75 2A1.75 1.75 0 002 3.75v8.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 12.25v-3.5a.75.75 0 00-1.5 0v3.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-8.5a.25.25 0 01.25-.25h3.5a.75.75 0 000-1.5h-3.5z"></path>
+            </svg>
+          </a>
+        </span>
+      </span></animated-image></p>
+<h2 tabindex="-1" dir="auto"><a id="user-content-step-1-create-the-report" class="anchor" aria-hidden="true" tabindex="-1" href="#step-1-create-the-report"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">第 1 步：创建报告</font></font></h2>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">创建报告有 3 个主要功能：</font></font></p>
+<ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">分析（...）</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">比较（...）</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">比较_内部（...）</font></font></li>
+</ul>
+<h4 tabindex="-1" dir="auto"><a id="user-content-analyzing-a-single-dataframe-and-its-optional-target-feature" class="anchor" aria-hidden="true" tabindex="-1" href="#analyzing-a-single-dataframe-and-its-optional-target-feature"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">分析单个数据帧（及其可选的目标特征）</font></font></h4>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">要分析单个数据帧，只需使用该</font></font><code>analyze(...)</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">函数，然后使用该</font></font><code>show_html(...)</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">函数：</font></font></p>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>import sweetviz as sv
 
 my_report = sv.analyze(my_dataframe)
 my_report.show_html() # Default arguments will generate to "SWEETVIZ_REPORT.html"
-```
-When run, this will output a 1080p widescreen html app in your default browser:
-![Widescreen demo](http://cooltiming.com/SV/demo_wide.png)
-##### Optional arguments
-The `analyze()` function can take multiple other arguments:
-```
-analyze(source: Union[pd.DataFrame, Tuple[pd.DataFrame, str]],
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="import sweetviz as sv
+
+my_report = sv.analyze(my_dataframe)
+my_report.show_html() # Default arguments will generate to &quot;SWEETVIZ_REPORT.html&quot;" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">运行时，这将在默认浏览器中输出 1080p 宽屏 html 应用程序：
+</font></font><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/8fb4e6747b00468d0f187c23ffa793179870ff7ad581601b72ce988a75f25346/687474703a2f2f636f6f6c74696d696e672e636f6d2f53562f64656d6f5f776964652e706e67"><img src="https://camo.githubusercontent.com/8fb4e6747b00468d0f187c23ffa793179870ff7ad581601b72ce988a75f25346/687474703a2f2f636f6f6c74696d696e672e636f6d2f53562f64656d6f5f776964652e706e67" alt="宽屏演示" data-canonical-src="http://cooltiming.com/SV/demo_wide.png" style="max-width: 100%;"></a></p>
+<h5 tabindex="-1" dir="auto"><a id="user-content-optional-arguments" class="anchor" aria-hidden="true" tabindex="-1" href="#optional-arguments"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">可选参数</font></font></h5>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">该</font></font><code>analyze()</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">函数可以采用多个其他参数：</font></font></p>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>analyze(source: Union[pd.DataFrame, Tuple[pd.DataFrame, str]],
             target_feat: str = None,
             feat_cfg: FeatureConfig = None,
             pairwise_analysis: str = 'auto',
             verbosity: str = 'default'):
-```
-- **source:** Either the data frame (as in the example) or a tuple containing the data frame and a name to show in the report. 
-e.g. `my_df` or `[my_df, "Training"]`
-- **target_feat:** A string representing the name of the feature to be marked as "target". *Only BOOLEAN and NUMERICAL features can be targets for now.*
-- **feat_cfg:** A FeatureConfig object representing features to be skipped, or to be forced a certain type in the analysis. The arguments can either be a single string or list of strings. Parameters are `skip`, `force_cat`, `force_num` and `force_text`. The "force_" arguments override the built-in type detection. They can be constructed as follows:
-```
-feature_config = sv.FeatureConfig(skip="PassengerId", force_text=["Age"])
-```
-- **verbosity:** **[NEW]** Can be set to `full`, `progress_only` (to only display the progress bar but not report generation messages) and `off` (fully quiet, except for errors or warnings). Default  verbosity can also be set in the INI override, under the "General" heading (see "The Config file" section below for details).
-- **pairwise_analysis:** Correlations and other associations can take quadratic time (n^2) to complete. The default setting ("auto") will run without warning until a data set contains "association_auto_threshold" features. Past that threshold, you need to explicitly pass the parameter `pairwise_analysis="on"` (or `="off"`) since processing that many features would take a long time. This parameter also covers the generation of the association graphs (based on [Drazen Zaric's concept](https://towardsdatascience.com/better-heatmaps-and-correlation-matrix-plots-in-python-41445d0f2bec)):
-
-![Pairwise sample](http://cooltiming.com/SV/pairwise.png)
-
-#### Comparing two dataframes (e.g. Test vs Training sets)
-To compare two data sets, simply use the `compare()` function. Its parameters are the same as `analyze()`, except with an inserted second parameter to cover the comparison dataframe. It is recommended to use the [dataframe, "name"] format of parameters to better differentiate between the base and compared dataframes. (e.g. `[my_df, "Train"]` vs `my_df`)
-```
-my_report = sv.compare([my_dataframe, "Training Data"], [test_df, "Test Data"], "Survived", feature_config)
-```
-#### Comparing two subsets of the same dataframe (e.g. Male vs Female)
-Another way to get great insights is to use the comparison functionality to split your dataset into 2 sub-populations.
-
-Support for this is built in through the `compare_intra()` function. This function takes a boolean series as one of the arguments, as well as an explicit "name" tuple for naming the (true, false) resulting datasets. Note that internally, this creates 2 separate dataframes to represent each resulting group. As such, it is more of a shorthand function of doing such processing manually.
-```
-my_report = sv.compare_intra(my_dataframe, my_dataframe["Sex"] == "male", ["Male", "Female"], "Survived", feature_config)
-```
-## Step 2: Show the report
-Once you have created your report object (e.g. `my_report` in the examples above), simply pass it into one of the two `show' functions:
-
-### show_html()
-```
-show_html(  filepath='SWEETVIZ_REPORT.html', 
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="analyze(source: Union[pd.DataFrame, Tuple[pd.DataFrame, str]],
+            target_feat: str = None,
+            feat_cfg: FeatureConfig = None,
+            pairwise_analysis: str = 'auto',
+            verbosity: str = 'default'):" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<ul dir="auto">
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">源：</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">数据框（如示例中所示）或包含数据框和要在报告中显示的名称的元组。</font><font style="vertical-align: inherit;">例如</font></font><code>my_df</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">或</font></font><code>[my_df, "Training"]</code></li>
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">target_feat：</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">表示要标记为“目标”的功能名称的字符串。</font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">目前只有 BOOLEAN 和 NUMERICAL 特征可以作为目标。</font></font></em></li>
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">feat_cfg：</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">一个FeatureConfig对象，表示要跳过的特征，或者在分析中强制采用某种类型。</font><font style="vertical-align: inherit;">参数可以是单个字符串或字符串列表。</font><font style="vertical-align: inherit;">参数为</font></font><code>skip</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><code>force_cat</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><code>force_num</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和</font></font><code>force_text</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">“force_”参数覆盖内置类型检测。</font><font style="vertical-align: inherit;">它们可以构造如下：</font></font></li>
+</ul>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>feature_config = sv.FeatureConfig(skip="PassengerId", force_text=["Age"])
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="feature_config = sv.FeatureConfig(skip=&quot;PassengerId&quot;, force_text=[&quot;Age&quot;])" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<ul dir="auto">
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">verbosity：</font></font></strong> <strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">[新]</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">可以设置为</font></font><code>full</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，</font></font><code>progress_only</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">（仅显示进度条，但不显示报告生成消息）和</font></font><code>off</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">（完全安静，错误或警告除外）。</font><font style="vertical-align: inherit;">默认详细程度也可以在 INI 覆盖中的“常规”标题下设置（有关详细信息，请参阅下面的“配置文件”部分）。</font></font></li>
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">pairwise_analysis：</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">相关性和其他关联可能需要二次时间 (n^2) 才能完成。</font><font style="vertical-align: inherit;">默认设置（“auto”）将在没有警告的情况下运行，直到数据集包含“association_auto_threshold”功能。</font><font style="vertical-align: inherit;">超过该阈值，您需要显式传递参数</font></font><code>pairwise_analysis="on"</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">（或</font></font><code>="off"</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">），因为处理这么多功能将需要很长时间。</font><font style="vertical-align: inherit;">该参数还涵盖关联图的生成（基于</font></font><a href="https://towardsdatascience.com/better-heatmaps-and-correlation-matrix-plots-in-python-41445d0f2bec" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Drazen Zaric 的概念</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">）：</font></font></li>
+</ul>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/04d6831daaadd28dcda2199949cdf88627b849e7b56475e7eb3ff6bc1e832314/687474703a2f2f636f6f6c74696d696e672e636f6d2f53562f70616972776973652e706e67"><img src="https://camo.githubusercontent.com/04d6831daaadd28dcda2199949cdf88627b849e7b56475e7eb3ff6bc1e832314/687474703a2f2f636f6f6c74696d696e672e636f6d2f53562f70616972776973652e706e67" alt="成对样本" data-canonical-src="http://cooltiming.com/SV/pairwise.png" style="max-width: 100%;"></a></p>
+<h4 tabindex="-1" dir="auto"><a id="user-content-comparing-two-dataframes-eg-test-vs-training-sets" class="anchor" aria-hidden="true" tabindex="-1" href="#comparing-two-dataframes-eg-test-vs-training-sets"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">比较两个数据帧（例如测试集与训练集）</font></font></h4>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">要比较两个数据集，只需使用该</font></font><code>compare()</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">函数即可。</font><font style="vertical-align: inherit;">它的参数与 相同</font></font><code>analyze()</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，只是插入了第二个参数来覆盖比较数据帧。</font><font style="vertical-align: inherit;">建议使用 [dataframe, "name"] 格式的参数，以更好地区分基础数据帧和比较数据帧。</font><font style="vertical-align: inherit;">（例如</font></font><code>[my_df, "Train"]</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">vs </font></font><code>my_df</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">）</font></font></p>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>my_report = sv.compare([my_dataframe, "Training Data"], [test_df, "Test Data"], "Survived", feature_config)
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="my_report = sv.compare([my_dataframe, &quot;Training Data&quot;], [test_df, &quot;Test Data&quot;], &quot;Survived&quot;, feature_config)" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<h4 tabindex="-1" dir="auto"><a id="user-content-comparing-two-subsets-of-the-same-dataframe-eg-male-vs-female" class="anchor" aria-hidden="true" tabindex="-1" href="#comparing-two-subsets-of-the-same-dataframe-eg-male-vs-female"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">比较同一数据帧的两个子集（例如男性与女性）</font></font></h4>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">获得深入见解的另一种方法是使用比较功能将数据集分为 2 个子群体。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">对此的支持是通过该</font></font><code>compare_intra()</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">函数内置的。</font><font style="vertical-align: inherit;">该函数采用布尔系列作为参数之一，以及用于命名（true，false）结果数据集的显式“名称”元组。</font><font style="vertical-align: inherit;">请注意，在内部，这会创建 2 个单独的数据帧来表示每个结果组。</font><font style="vertical-align: inherit;">因此，它更多的是手动进行此类处理的速记功能。</font></font></p>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>my_report = sv.compare_intra(my_dataframe, my_dataframe["Sex"] == "male", ["Male", "Female"], "Survived", feature_config)
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="my_report = sv.compare_intra(my_dataframe, my_dataframe[&quot;Sex&quot;] == &quot;male&quot;, [&quot;Male&quot;, &quot;Female&quot;], &quot;Survived&quot;, feature_config)" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<h2 tabindex="-1" dir="auto"><a id="user-content-step-2-show-the-report" class="anchor" aria-hidden="true" tabindex="-1" href="#step-2-show-the-report"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">第 2 步：显示报告</font></font></h2>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">创建报表对象后（例如</font></font><code>my_report</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">上面的示例），只需将其传递到两个“show”函数之一：</font></font></p>
+<h3 tabindex="-1" dir="auto"><a id="user-content-show_html" class="anchor" aria-hidden="true" tabindex="-1" href="#show_html"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">显示_html()</font></font></h3>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>show_html(  filepath='SWEETVIZ_REPORT.html', 
             open_browser=True, 
             layout='widescreen', 
             scale=None)
-```            
-**show_html(...)** will create and save an HTML report at the given file path. There are options for:
-- **layout**: Either `'widescreen'` or `'vertical'`. The widescreen layout displays details on the right side of the screen, as the mouse goes over each feature. The new (as of 2.0) vertical layout is more compact horizontally and enables expanding each detail area upon clicking.
-- **scale**: Use a floating-point number (e.g. `scale = 0.8` or `None`) to scale the entire report. This is very useful to fit reports to any output.
-- **open_browser**: Enables the automatic opening of a web browser to show the report. Since under some circumstances this is not desired (or causes issues with some IDE's), you can disable it here.
-
-### show_notebook()
-```
-show_notebook(  w=None, 
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="show_html(  filepath='SWEETVIZ_REPORT.html', 
+            open_browser=True, 
+            layout='widescreen', 
+            scale=None)" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">show_html(...)</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">将在给定文件路径中创建并保存 HTML 报告。</font><font style="vertical-align: inherit;">有以下选项：</font></font></p>
+<ul dir="auto">
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">布局</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">： 或</font></font><code>'widescreen'</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">或</font></font><code>'vertical'</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">当鼠标滑过每个功能时，宽屏布局会在屏幕右侧显示详细信息。</font><font style="vertical-align: inherit;">新的（自 2.0 起）垂直布局在水平方向上更加紧凑，并且可以在单击时扩展每个细节区域。</font></font></li>
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">scale</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：使用浮点数（例如</font></font><code>scale = 0.8</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">或</font></font><code>None</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">）来缩放整个报表。</font><font style="vertical-align: inherit;">这对于使报告适合任何输出非常有用。</font></font></li>
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">open_browser</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：启用 Web 浏览器自动打开以显示报告。</font><font style="vertical-align: inherit;">由于在某些情况下这是不需要的（或者会导致某些 IDE 出现问题），因此您可以在此处禁用它。</font></font></li>
+</ul>
+<h3 tabindex="-1" dir="auto"><a id="user-content-show_notebook" class="anchor" aria-hidden="true" tabindex="-1" href="#show_notebook"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">显示笔记本（）</font></font></h3>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>show_notebook(  w=None, 
                 h=None, 
                 scale=None,
                 layout='widescreen',
                 filepath=None,
                 file_layout=None,
                 file_scale=None)
-```            
-**show_notebook(...)** is new as of 2.0 and will embed an IFRAME element showing the report right inside a notebook (e.g. Jupyter, Google Colab, etc.). 
-
-Note that since notebooks are generally a more constrained visual environment, it is probably a good idea to use custom width/height/scale values (`w`, `h`, `scale`) and even **set custom default values in an INI override** (see below). The options are:
-- **w** (width): Sets the width of the output _window_ for the report (the full report may not fit; use `layout` and/or `scale` for the report itself). Can be as a percentage string (`w="100%"`) or number of pixels (`w=900`).
-- **h** (height): Sets the height of the output _window_ for the report. Can be as a number of pixels (`h=700`) or "Full" to stretch the window to be as tall as all the features (`h="Full"`).
-- **scale**: Same as for `show_html()`, above.
-- **layout**: Same as for `show_html()`, above.
-- **filepath**: An OPTIONAL output HTML report.
-- **file_layout**: Layout for the OPTIONAL file output ONLY (same as `layout` for `show_html()`, above)
-- **file_scale**: Scale for the OPTIONAL file output ONLY (same as `scale` for `show_html()`, above)
-# Customizing defaults: the Config file
-The package contains an INI file for configuration. You can override any setting by providing your own then calling this before creating a report:
-```
-sv.config_parser.read("Override.ini")
-```
-**IMPORTANT #1:** it is best to load overrides **before any other command**, as many of the INI options are used in the report generation.  
-
-**IMPORTANT #2:** always **put the header line** (e.g. `[General]`) before a set of values in your override INI file, **otherwise your settings will be ignored**. See examples below. If setting multiple values, only include the `[General]` line once.
-
-
-### Most useful config overrides
-You can look into the file `sweetviz_defaults.ini` for what can be overriden (warning: much of it is a work in progress and not well documented), but the most useful overrides are as follows.
-
-#### Default report layout, size
-Override any of these (by putting them in your own INI, again do not forget the header), to avoid having to set them every time you do a "show" command:
-
-**Important**: note the double '%' if specifying a percentage
-```
-[Output_Defaults]
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="show_notebook(  w=None, 
+                h=None, 
+                scale=None,
+                layout='widescreen',
+                filepath=None,
+                file_layout=None,
+                file_scale=None)" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">show_notebook(...)</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">是从 2.0 开始的新功能，它将嵌入一个 IFRAME 元素，在笔记本中显示报告（例如 Jupyter、Google Colab 等）。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">请注意，由于笔记本电脑通常是一个更受限制的视觉环境，因此使用自定义宽度/高度/比例值（</font></font><code>w</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><code>h</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><code>scale</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">）甚至</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在 INI 覆盖中设置自定义默认值</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">可能是一个好主意（见下文）。</font><font style="vertical-align: inherit;">选项有：</font></font></p>
+<ul dir="auto">
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">w （宽度）：设置报告输出</font></font></strong><font style="vertical-align: inherit;"></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">窗口</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">的宽度</font><font style="vertical-align: inherit;">（可能无法容纳完整报告；使用</font></font><code>layout</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和/或</font></font><code>scale</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">用于报告本身）。</font><font style="vertical-align: inherit;">可以是百分比字符串 ( </font></font><code>w="100%"</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">) 或像素数 ( </font></font><code>w=900</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">)。</font></font></li>
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">h</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> （高度）：设置报告输出</font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">窗口</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">的高度。</font><font style="vertical-align: inherit;">可以是像素数 ( </font></font><code>h=700</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">) 或“全”，以将窗口拉伸到与所有要素一样高 ( </font></font><code>h="Full"</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">)。</font></font></li>
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">规模</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：与上面的 相同</font></font><code>show_html()</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></li>
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">布局</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：与上面的相同</font></font><code>show_html()</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></li>
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">filepath</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：可选的输出 HTML 报告。</font></font></li>
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">file_layout</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：仅用于可选文件输出的布局（与</font></font><code>layout</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">上面</font></font><code>show_html()</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">的相同）</font></font></li>
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">file_scale</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：仅用于可选文件输出的比例（与</font></font><code>scale</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">上面</font></font><code>show_html()</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">的相同）</font></font></li>
+</ul>
+<h1 tabindex="-1" dir="auto"><a id="user-content-customizing-defaults-the-config-file" class="anchor" aria-hidden="true" tabindex="-1" href="#customizing-defaults-the-config-file"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">自定义默认值：配置文件</font></font></h1>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">该软件包包含一个用于配置的 INI 文件。</font><font style="vertical-align: inherit;">您可以通过提供自己的设置来覆盖任何设置，然后在创建报告之前调用此设置：</font></font></p>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>sv.config_parser.read("Override.ini")
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="sv.config_parser.read(&quot;Override.ini&quot;)" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">重要#1：</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">最好</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在任何其他命令之前</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">加载覆盖，因为许多 INI 选项在报告生成中使用。</font></font></p>
+<p dir="auto"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">重要#2：</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">始终</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">将标题行</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">（例如</font></font><code>[General]</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">）放在覆盖 INI 文件中的一组值之前，</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">否则您的设置将被忽略</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">请参阅下面的示例。</font><font style="vertical-align: inherit;">如果设置多个值，则仅包含该</font></font><code>[General]</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">行一次。</font></font></p>
+<h3 tabindex="-1" dir="auto"><a id="user-content-most-useful-config-overrides" class="anchor" aria-hidden="true" tabindex="-1" href="#most-useful-config-overrides"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">最有用的配置覆盖</font></font></h3>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您可以查看该文件</font></font><code>sweetviz_defaults.ini</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">以了解可以覆盖的内容（警告：其中大部分内容正在进行中，并且没有详细记录），但最有用的覆盖如下。</font></font></p>
+<h4 tabindex="-1" dir="auto"><a id="user-content-default-report-layout-size" class="anchor" aria-hidden="true" tabindex="-1" href="#default-report-layout-size"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">默认报告布局、大小</font></font></h4>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">覆盖其中任何一个（通过将它们放入您自己的 INI 中，再次不要忘记标头），以避免每次执行“show”命令时都必须设置它们：</font></font></p>
+<p dir="auto"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">重要提示</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：如果指定百分比，请注意双“%”</font></font></p>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>[Output_Defaults]
 html_layout = widescreen
 html_scale = 1.0
 notebook_layout = vertical
 notebook_scale = 0.9
 notebook_width = 100%%
 notebook_height = 700
-```
-
-##### Chinese, Japanse, Korean (CJK) character support
-```
-[General]
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="[Output_Defaults]
+html_layout = widescreen
+html_scale = 1.0
+notebook_layout = vertical
+notebook_scale = 0.9
+notebook_width = 100%%
+notebook_height = 700" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<h5 tabindex="-1" dir="auto"><a id="user-content-chinese-japanse-korean-cjk-character-support" class="anchor" aria-hidden="true" tabindex="-1" href="#chinese-japanse-korean-cjk-character-support"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">中文、日文、韩文 (CJK) 字符支持</font></font></h5>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>[General]
 use_cjk_font = 1 
-```
-*\*If setting multiple values for `[general]` only include the `[General]` line once*.
-
-Will switch the font in the graphs to use a CJK-compatible font. Although this font is not as compact, it will get rid of any warnings and "unknown character" symbols for these languages.
-##### Remove Sweetviz logo
-```
-[Layout]
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="[General]
+use_cjk_font = 1 " tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*如果设置多个值，则</font></font><code>[general]</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">仅包含该</font></font><code>[General]</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">行一次</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">将切换图表中的字体以使用 CJK 兼容字体。</font><font style="vertical-align: inherit;">尽管这种字体不是那么紧凑，但它会消除这些语言的任何警告和“未知字符”符号。</font></font></p>
+<h5 tabindex="-1" dir="auto"><a id="user-content-remove-sweetviz-logo" class="anchor" aria-hidden="true" tabindex="-1" href="#remove-sweetviz-logo"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">删除 Sweetviz 徽标</font></font></h5>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>[Layout]
 show_logo = 0
-```
-Will remove the Sweetviz logo from the top of the page. 
-
-##### Set default verbosity level
-```
-[General]
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="[Layout]
+show_logo = 0" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">将从页面顶部删除 Sweetviz 徽标。</font></font></p>
+<h5 tabindex="-1" dir="auto"><a id="user-content-set-default-verbosity-level" class="anchor" aria-hidden="true" tabindex="-1" href="#set-default-verbosity-level"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">设置默认详细级别</font></font></h5>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>[General]
 default_verbosity = off 
-```
-*\*If setting multiple values for `[general]` only include the `[General]` line once*.
-
-Can be set to `full`, `progress_only` (to only display the progress bar but not report generation messages) and `off` (fully quiet, except for errors or warnings).
-
-# Correlation/Association analysis
-A major source of insight and unique feature of Sweetviz' associations graph and analysis is that **it unifies in a single graph** (and detail views):
- - Numerical correlation (between numerical features)
- - Uncertainty coefficient (for categorical-categorical)
- - Correlation ratio (for categorical-numerical)
-![Pairwise sample](http://cooltiming.com/SV/pairwise.png)
-
- Squares represent categorical-featured-related variables and circles represent numerical-numerical correlations. Note that the trivial diagonal is left empty, for clarity.
- 
-IMPORTANT: categorical-categorical associations (provided by the SQUARES showing the uncertainty coefficient) are ASSYMMETRICAL, meaning that each row represents **how much the row title (on the left) gives information on each column**. _For example, "Sex", "Pclass" and "Fare" are the elements that give the most information on "Survived"._ 
-
-For the Titanic dataset, this information is rather symmetrical but it is not always the case!
-
-Correlations are also displayed in the detail section of each feature, with the target value highlighted when applicable. e.g.:
-
-![Associations detail](http://cooltiming.com/SV/associations_detail.PNG)
-
-Finally, it is worth noting these correlation/association methods shouldn’t be taken as gospel as they make some assumptions on the underlying distribution of data and relationships. However they can be a _very_ useful starting point.
-
-# Comet.ml integration
-As of 2.1, Sweetviz now fully integrates [Comet.ml](https://www.comet.ml). This means Sweetviz will **automatically log any reports generated** using `show_html()` and `show_notebook()` to your workspace, as long as your API key is set up correctly in your environment.
-
-Additionally, you can also use the new function `report.log_comet(experiment_object)` to explicitly upload a report for a given experiment to your workspace.
-
-You can see an example of a [Colab notebook](https://colab.research.google.com/drive/1SK1I-gU6nLchesbMtFD9ZuzJHyzleFAr?usp=sharing) to generate the report, and its corresponding report in a [Comet.ml workspace](https://www.comet.ml/fbdesignpro/sweetviz-comet/d005158117c24924b07476887cd5ddfa?experiment-tab=html).
-
-## Comet report parameters
-You can customize how the Sweetviz report looks in your Comet workspace by overriding the `[comet_ml_defaults]` section of configuration file. See above for more information on using the INI override.
-
-You can choose to use either the `widescreen` (horizontal) or `vertical` layouts, as well as set your preferred scale, by putting the following in your override INI file:
-```
-[comet_ml_defaults]
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="[General]
+default_verbosity = off " tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*如果设置多个值，则</font></font><code>[general]</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">仅包含该</font></font><code>[General]</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">行一次</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">可以设置为</font></font><code>full</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，</font></font><code>progress_only</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">（仅显示进度条，但不显示报告生成消息）和</font></font><code>off</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">（完全安静，错误或警告除外）。</font></font></p>
+<h1 tabindex="-1" dir="auto"><a id="user-content-correlationassociation-analysis" class="anchor" aria-hidden="true" tabindex="-1" href="#correlationassociation-analysis"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">相关/关联分析</font></font></h1>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Sweetviz 关联图和分析的洞察力和独特功能的主要来源是</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">它统一在单个图</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">（和详细视图）中：</font></font></p>
+<ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">数值相关性（数值特征之间）</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">不确定性系数（对于分类-分类）</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">相关比（对于分类数值）
+</font></font><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/04d6831daaadd28dcda2199949cdf88627b849e7b56475e7eb3ff6bc1e832314/687474703a2f2f636f6f6c74696d696e672e636f6d2f53562f70616972776973652e706e67"><img src="https://camo.githubusercontent.com/04d6831daaadd28dcda2199949cdf88627b849e7b56475e7eb3ff6bc1e832314/687474703a2f2f636f6f6c74696d696e672e636f6d2f53562f70616972776973652e706e67" alt="成对样本" data-canonical-src="http://cooltiming.com/SV/pairwise.png" style="max-width: 100%;"></a></li>
+</ul>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">正方形表示与分类特征相关的变量，圆圈表示数值之间的相关性。</font><font style="vertical-align: inherit;">请注意，为了清楚起见，平凡的对角线留空。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">重要提示：分类-分类关联（由显示不确定性系数的 SQUARES 提供）是 ASSYMMETRICAL，这意味着每行代表</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">行标题（左侧）在每列上提供的信息量</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">例如，“性别”、“乘客等级”和“票价”是提供有关“幸存者”最多信息的元素。</font></font></em></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">对于泰坦尼克号数据集，这些信息相当对称，但情况并非总是如此！</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">相关性也会显示在每个功能的详细信息部分，并在适用时突出显示目标值。</font><font style="vertical-align: inherit;">例如：</font></font></p>
+<p dir="auto"><a target="_blank" rel="noopener noreferrer nofollow" href="https://camo.githubusercontent.com/7a463959bc92463d8260dbf3e3f70c09b1f9bd124e33717a82938791bb7160f4/687474703a2f2f636f6f6c74696d696e672e636f6d2f53562f6173736f63696174696f6e735f64657461696c2e504e47"><img src="https://camo.githubusercontent.com/7a463959bc92463d8260dbf3e3f70c09b1f9bd124e33717a82938791bb7160f4/687474703a2f2f636f6f6c74696d696e672e636f6d2f53562f6173736f63696174696f6e735f64657461696c2e504e47" alt="协会详情" data-canonical-src="http://cooltiming.com/SV/associations_detail.PNG" style="max-width: 100%;"></a></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">最后，值得注意的是，这些相关/关联方法不应被视为福音，因为它们对数据和关系的基本分布做出了一些假设。</font><font style="vertical-align: inherit;">然而，它们可能是一个</font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">非常</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">有用的起点。</font></font></p>
+<h1 tabindex="-1" dir="auto"><a id="user-content-cometml-integration" class="anchor" aria-hidden="true" tabindex="-1" href="#cometml-integration"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Comet.ml 集成</font></font></h1>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">从 2.1 开始，Sweetviz 现在完全集成了</font></font><a href="https://www.comet.ml" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Comet.ml</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">这意味着</font><font style="vertical-align: inherit;">只要您的 API 密钥在您的环境中正确设置， Sweetviz 就会</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">自动</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">将使用</font></font><code>show_html()</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和生成的任何报告记录到您的工作区。</font></font><code>show_notebook()</code><font style="vertical-align: inherit;"></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">此外，您还可以使用新功能</font></font><code>report.log_comet(experiment_object)</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">将给定实验的报告显式上传到您的工作区。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"></font><a href="https://colab.research.google.com/drive/1SK1I-gU6nLchesbMtFD9ZuzJHyzleFAr?usp=sharing" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您可以看到用于生成报告的Colab 笔记本</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">的示例，以及</font></font><a href="https://www.comet.ml/fbdesignpro/sweetviz-comet/d005158117c24924b07476887cd5ddfa?experiment-tab=html" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Comet.ml 工作区</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">中的相应报告</font><font style="vertical-align: inherit;">。</font></font></p>
+<h2 tabindex="-1" dir="auto"><a id="user-content-comet-report-parameters" class="anchor" aria-hidden="true" tabindex="-1" href="#comet-report-parameters"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">彗星报告参数</font></font></h2>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您可以通过覆盖配置文件的部分来自定义 Sweetviz 报告在 Comet 工作区中的外观</font></font><code>[comet_ml_defaults]</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">有关使用 INI 覆盖的更多信息，请参阅上文。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您可以选择使用</font></font><code>widescreen</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">（水平）或</font></font><code>vertical</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">布局，并通过将以下内容放入覆盖 INI 文件中来设置您的首选比例：</font></font></p>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>[comet_ml_defaults]
 html_layout = vertical
 html_scale = 0.85
-```
-
-# Troubleshooting / FAQ
-- **Installation issues**
-
-Please see the "Installation issues & fixes" section at the top of this document
-- **Asian characters, "RuntimeWarning: Glyph ### missing from current font"**
-
-See section above regarding CJK characters support. If you find the need for additional character types, definitely [post a request in the issue tracking system.](https://github.com/fbdesignpro/sweetviz/issues)
-
-- **...any other issues**
-
-Development is ongoing so absolutely feel free to report any issues and/or suggestions [in the issue tracking system here](https://github.com/fbdesignpro/sweetviz/issues) or [in our forum (you should be able to log in with your Github account!)](https://sweetviz.fbdesignpro.com)
-
-# Contribute
-This is my first open-source project! I built it to be the most useful tool possible and help as many people as possible with their data science work. If it is useful to you, your contribution is more than welcome and can take many forms:
-### 1. Spread the word!
-A STAR here on GitHub, and a Twitter or Instagram post are the easiest contribution and can potentially help grow this project tremendously! If you find this project useful, these quick actions from you would mean a lot and could go a long way. 
-
-Kaggle notebooks/posts, Medium articles, YouTube video tutorials and other content take more time but will help all the more!
-
-### 2. Report bugs & issues
-I expect there to be many quirks once the project is used by more and more people with a variety of new (& "unclean") data. If you found a bug, please [open a new issue here](https://github.com/fbdesignpro/sweetviz/issues).
-
-### 3. Suggest and discuss usage/features
-To make Sweetviz as useful as possible we need to hear what you would like it to do, or what it could do better! [Head on to our Discourse server and post your suggestions there; no login required!](https://sweetviz.fbdesignpro.com).
-
-### 4. Contribute to the development
-I definitely welcome the help I can get on this project, simply get in touch on the issue tracker and/or our Discourse forum. 
-
-Please note that after a hectic development period, the code itself right now needs a bit of cleanup. :)
-
-# Special thanks & related materials
-### Contributors
-**A very special thanks to everyone who have contributed on Github, through reports, feedback and commits!** I want to give a special shout out to **Frank Male** who has been of tremendous help for fixing issues and setting up the new build pipeline for 2.2.0.
-
-[![Contributors](https://contrib.rocks/image?repo=fbdesignpro/sweetviz)](https://github.com/fbdesignpro/sweetviz/graphs/contributors)
-
-Made with [contrib.rocks](https://contrib.rocks).
-### Related materials
-I want Sweetviz to be a hub of the best of what's out there, a way to get the most valuable information and visualization, without reinventing the wheel.
-
-As such, I want to point some of those great resources that were inspiring and integrated into Sweetviz:
-- [Pandas-Profiling](https://github.com/pandas-profiling/pandas-profiling) was the original inspiration for this project. Some of its type-detection code was included in Sweetviz.
-- [Shaked Zychlinski: The Search for Categorical Correlation](https://towardsdatascience.com/the-search-for-categorical-correlation-a1cf7f1888c9) is a great article about different types of variable interactions that was the basis of that analysis in Sweetviz.
-- [Drazen Zaric: Better Heatmaps and Correlation Matrix Plots in Python](https://towardsdatascience.com/better-heatmaps-and-correlation-matrix-plots-in-python-41445d0f2bec) was the basis for our association graphs.
-
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="[comet_ml_defaults]
+html_layout = vertical
+html_scale = 0.85" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<h1 tabindex="-1" dir="auto"><a id="user-content-troubleshooting--faq" class="anchor" aria-hidden="true" tabindex="-1" href="#troubleshooting--faq"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">故障排除/常见问题解答</font></font></h1>
+<ul dir="auto">
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">安装问题</font></font></strong></li>
+</ul>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">请参阅本文档顶部的“安装问题和修复”部分</font></font></p>
+<ul dir="auto">
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">亚洲字符，“运行时警告：当前字体中缺少字形 ###”</font></font></strong></li>
+</ul>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">请参阅上面有关 CJK 字符支持的部分。</font><font style="vertical-align: inherit;">如果您发现需要其他字符类型，请务必</font></font><a href="https://github.com/fbdesignpro/sweetviz/issues"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在问题跟踪系统中发布请求。</font></font></a></p>
+<ul dir="auto">
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">...任何其他问题</font></font></strong></li>
+</ul>
+<p dir="auto"><font style="vertical-align: inherit;"></font><a href="https://github.com/fbdesignpro/sweetviz/issues"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">开发正在进行中，因此绝对可以在此处的问题跟踪系统</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">或我们的论坛中</font><font style="vertical-align: inherit;">报告任何问题和/或建议</font></font><a href="https://sweetviz.fbdesignpro.com" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">（您应该能够使用您的 Github 帐户登录！）</font></font></a></p>
+<h1 tabindex="-1" dir="auto"><a id="user-content-contribute" class="anchor" aria-hidden="true" tabindex="-1" href="#contribute"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">贡献</font></font></h1>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">这是我的第一个开源项目！</font><font style="vertical-align: inherit;">我将其打造为最有用的工具，并帮助尽可能多的人进行数据科学工作。</font><font style="vertical-align: inherit;">如果它对您有用，我们非常欢迎您的贡献，并且可以采取多种形式：</font></font></p>
+<h3 tabindex="-1" dir="auto"><a id="user-content-1-spread-the-word" class="anchor" aria-hidden="true" tabindex="-1" href="#1-spread-the-word"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1. 传播出去！</font></font></h3>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">GitHub 上的 STAR 以及 Twitter 或 Instagram 帖子是最简单的贡献，并且可以极大地帮助该项目发展！</font><font style="vertical-align: inherit;">如果您发现这个项目有用，那么您的这些快速行动将意义重大，并且可能大有帮助。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Kaggle 笔记本/帖子、Medium 文章、YouTube 视频教程和其他内容需要更多时间，但会更有帮助！</font></font></p>
+<h3 tabindex="-1" dir="auto"><a id="user-content-2-report-bugs--issues" class="anchor" aria-hidden="true" tabindex="-1" href="#2-report-bugs--issues"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">2. 报告错误和问题</font></font></h3>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我预计，一旦该项目被越来越多的人使用各种新的（和“不干净的”）数据，就会出现很多怪癖。</font><font style="vertical-align: inherit;">如果您发现错误，请</font></font><a href="https://github.com/fbdesignpro/sweetviz/issues"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在此处打开新问题</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+<h3 tabindex="-1" dir="auto"><a id="user-content-3-suggest-and-discuss-usagefeatures" class="anchor" aria-hidden="true" tabindex="-1" href="#3-suggest-and-discuss-usagefeatures"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">3.建议并讨论用法/功能</font></font></h3>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">为了使 Sweetviz 尽可能有用，我们需要听听您希望它做什么，或者它可以做得更好！</font></font><a href="https://sweetviz.fbdesignpro.com" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">前往我们的 Discourse 服务器并在那里发布您的建议；</font><font style="vertical-align: inherit;">无需登录！</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+<h3 tabindex="-1" dir="auto"><a id="user-content-4-contribute-to-the-development" class="anchor" aria-hidden="true" tabindex="-1" href="#4-contribute-to-the-development"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">4. 为发展做出贡献</font></font></h3>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我绝对欢迎在这个项目上获得的帮助，只需联系问题跟踪器和/或我们的 Discourse 论坛即可。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">请注意，经过忙碌的开发期后，代码本身现在需要一些清理。</font><font style="vertical-align: inherit;">:)</font></font></p>
+<h1 tabindex="-1" dir="auto"><a id="user-content-special-thanks--related-materials" class="anchor" aria-hidden="true" tabindex="-1" href="#special-thanks--related-materials"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">特别鸣谢及相关材料</font></font></h1>
+<h3 tabindex="-1" dir="auto"><a id="user-content-contributors" class="anchor" aria-hidden="true" tabindex="-1" href="#contributors"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">贡献者</font></font></h3>
+<p dir="auto"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">特别感谢通过报告、反馈和提交在 Github 上做出贡献的所有人！</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我想特别感谢</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Frank Male</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，他为解决问题和建立 2.2.0 的新构建管道提供了巨大的帮助。</font></font></p>
+<p dir="auto"><a href="https://github.com/fbdesignpro/sweetviz/graphs/contributors"><img src="https://camo.githubusercontent.com/d6aa69cfd13c111daff61b55bb489901a9b4cb2f63d667e7053401c9da1bf0ad/68747470733a2f2f636f6e747269622e726f636b732f696d6167653f7265706f3d666264657369676e70726f2f737765657476697a" alt="贡献者" data-canonical-src="https://contrib.rocks/image?repo=fbdesignpro/sweetviz" style="max-width: 100%;"></a></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">用</font></font><a href="https://contrib.rocks" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">contrib.rocks</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">制作。</font></font></p>
+<h3 tabindex="-1" dir="auto"><a id="user-content-related-materials" class="anchor" aria-hidden="true" tabindex="-1" href="#related-materials"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">相关资料</font></font></h3>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我希望 Sweetviz 成为最好的东西的中心，一种获取最有价值的信息和可视化的方式，而无需重新发明轮子。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">因此，我想指出一些鼓舞人心并融入 Sweetviz 的优秀资源：</font></font></p>
+<ul dir="auto">
+<li><a href="https://github.com/pandas-profiling/pandas-profiling"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Pandas-Profiling</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">是这个项目的最初灵感。</font><font style="vertical-align: inherit;">Sweetviz 中包含了它的一些类型检测代码。</font></font></li>
+<li><a href="https://towardsdatascience.com/the-search-for-categorical-correlation-a1cf7f1888c9" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Shaked Zychlinski: The Search for Categorical Correlation</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">是一篇关于不同类型变量相互作用的精彩文章，它是 Sweetviz 中分析的基础。</font></font></li>
+<li><a href="https://towardsdatascience.com/better-heatmaps-and-correlation-matrix-plots-in-python-41445d0f2bec" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Drazen Zaric：Python 中更好的热图和相关矩阵图</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">是我们关联图的基础。</font></font></li>
+</ul>
+</article></div>
